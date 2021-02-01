@@ -26,18 +26,18 @@ namespace ompl
 
             The dynamics of the quadrotor are described by the following equations:
             \f{eqnarray*}{
-            m\ddot \mathbf{p} &=& -u_0\mathbf{n}-\beta\dot\mathbf{p} -m\mathbf{g},\\
+            m\mathbf{\ddot p} &=& -u_0\mathbf{n}-\beta\mathbf{\dot p} -m\mathbf{g},\\
             \mathbf{\alpha} &=& (u_1,u_2,u_3)^T,\f}
             where \f$\mathbf{p}\f$ is the position, \f$\mathbf{n}\f$ is the Z-axis of
             the body frame in world coordinates, \f$\alpha\f$ is the angular
             acceleration, \f$m\f$ is the mass, and \f$\beta\f$ is a damping coefficient.
             The system is controlled through \f$u=(u_0,u_1,u_2,u_3)\f$.
         */
-        class QuadrotorPlanning : public AppBase<CONTROL>
+        class QuadrotorPlanning : public AppBase<AppType::CONTROL>
         {
         public:
             QuadrotorPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), massInv_(1.), beta_(1.),
+                : AppBase<AppType::CONTROL>(constructControlSpace(), Motion_3D),
                   odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);
@@ -95,7 +95,7 @@ namespace ompl
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control* ctrl, control::ODESolver::StateType& qdot);
 
-            virtual void postPropagate(const base::State* state, const control::Control* control, const double duration, base::State* result);
+            virtual void postPropagate(const base::State* state, const control::Control* control, double duration, base::State* result);
 
             static control::ControlSpacePtr constructControlSpace()
             {
@@ -103,9 +103,9 @@ namespace ompl
             }
             static base::StateSpacePtr constructStateSpace();
 
-            double timeStep_;
-            double massInv_;
-            double beta_;
+            double timeStep_{1e-2};
+            double massInv_{1.};
+            double beta_{1.};
             control::ODESolverPtr odeSolver;
         };
 

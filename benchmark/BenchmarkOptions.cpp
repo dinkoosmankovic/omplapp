@@ -49,13 +49,14 @@ bool BenchmarkOptions::readOptions(const char *filename)
     static const std::string KNOWN_PLANNERS[] = {
         "rrtconnect", "lazyrrt", "lazyprm",
         "kpiece", "bkpiece", "lbkpiece",
-        "est", "biest", "projest", "sbl", "prm", "rrt",
+        "est", "biest", "projest", "sbl", "prm", "rrt", "rrtxstatic",
+        "bitstar", "abitstar", "aitstar",
         "stride", "pdst",
         "rrtstar", "prmstar", "lazyprmstar",
-        "spars", "spars2", "lbtrrt", "trrt",
+        "spars", "spars2", "sst", "lbtrrt", "lazylbtrrt", "trrt",
         "fmt", "bfmt",
         "syclopest", "sycloprrt",
-        "aps", "cforest"
+        "anytimepathshortening", "cforest"
     };
 
     std::ifstream cfg(filename);
@@ -87,6 +88,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
     ("problem.goal.axis.y", boost::program_options::value<std::string>(), "Goal position: rotation axis y value")
     ("problem.goal.axis.z", boost::program_options::value<std::string>(), "Goal position: rotation axis z value")
     ("problem.goal.theta", boost::program_options::value<std::string>(), "Goal position: theta value")
+    ("problem.statespace", boost::program_options::value<std::string>(), "State space")
+    ("problem.turningradius", boost::program_options::value<std::string>(), "Turning radius")
     ("problem.threshold", boost::program_options::value<std::string>()->default_value("1e-6"), "Threshold to reach goal position")
     ("problem.solution_length", boost::program_options::value<std::string>(), "Maximum desired solution length")
     ("problem.volume.min.x", boost::program_options::value<std::string>(), "Min X for bounding volume")
@@ -100,7 +103,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
     ("benchmark.mem_limit", boost::program_options::value<std::string>(), "Memory limit for each run of a planner")
     ("benchmark.run_count", boost::program_options::value<std::string>(), "Number of times to run each planner")
     ("benchmark.output", boost::program_options::value<std::string>(), "Location where to save the results")
-    ("benchmark.save_paths", boost::program_options::value<std::string>(), "Save none (default), all paths, shortest path per planner");
+    ("benchmark.save_paths", boost::program_options::value<std::string>(), "Save none (default), all paths, shortest path per planner")
+    ("benchmark.simplify", boost::program_options::value<std::string>(), "Simplify paths after each run");
 
     boost::program_options::variables_map vm;
     boost::program_options::parsed_options po = boost::program_options::parse_config_file(cfg, desc, true);

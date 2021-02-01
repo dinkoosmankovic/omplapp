@@ -42,7 +42,12 @@
 #include <ompl/geometric/planners/rrt/LazyRRT.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
 #include <ompl/geometric/planners/rrt/LBTRRT.h>
+#include <ompl/geometric/planners/rrt/LazyLBTRRT.h>
 #include <ompl/geometric/planners/rrt/TRRT.h>
+#include <ompl/geometric/planners/rrt/RRTXstatic.h>
+#include <ompl/geometric/planners/informedtrees/BITstar.h>
+#include <ompl/geometric/planners/informedtrees/ABITstar.h>
+#include <ompl/geometric/planners/informedtrees/AITstar.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/BKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
@@ -56,6 +61,7 @@
 #include <ompl/geometric/planners/prm/PRMstar.h>
 #include <ompl/geometric/planners/prm/SPARS.h>
 #include <ompl/geometric/planners/prm/SPARStwo.h>
+#include <ompl/geometric/planners/sst/SST.h>
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
 #include <ompl/geometric/planners/fmt/FMT.h>
@@ -69,6 +75,7 @@
 #include <ompl/control/planners/pdst/PDST.h>
 #include <ompl/control/planners/syclop/SyclopRRT.h>
 #include <ompl/control/planners/syclop/SyclopEST.h>
+#include <ompl/control/planners/sst/SST.h>
 
 #include <ompl/base/objectives/MaximizeMinClearanceObjective.h>
 #include <ompl/base/objectives/MechanicalWorkOptimizationObjective.h>
@@ -78,25 +85,16 @@
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
 #include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
 #include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
+#include <ompl/base/samplers/BridgeTestValidStateSampler.h>
 
 #include <fstream>
+#include <boost/lexical_cast.hpp>
 
-namespace {
-    boost::filesystem::path getAbsolutePath(const boost::filesystem::path& path, const boost::filesystem::path& prefix)
-    {
-        return (path.is_absolute()) ? path : (prefix / path);
-    }
-}
-
-std::string CFGBenchmark::getRobotMesh()
+void CFGBenchmark::setMeshes(ompl::app::RigidBodyGeometry& app)
 {
-    return getAbsolutePath(
-        boost::filesystem::path(bo_.declared_options_["problem.robot"]), bo_.path_).string();
-}
-std::string CFGBenchmark::getEnvironmentMesh()
-{
-    return getAbsolutePath(
-        boost::filesystem::path(bo_.declared_options_["problem.world"]), bo_.path_).string();
+    app.setMeshPath({bo_.path_, OMPLAPP_RESOURCE_DIR});
+    app.setRobotMesh(bo_.declared_options_["problem.robot"]);
+    app.setEnvironmentMesh(bo_.declared_options_["problem.world"]);
 }
 
 ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const BenchmarkOptions::AllOptions &opt)
@@ -114,6 +112,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::control::KPIECE1>(siC);
         else if (name == "pdst")
             p = std::make_shared<ompl::control::PDST>(siC);
+        else if (name == "sst")
+            p = std::make_shared<ompl::control::SST>(siC);
         else if (name == "sycloprrt")
             p = std::make_shared<ompl::control::SyclopRRT>(siC, allocDecomposition());
         else if (name == "syclopest")
@@ -133,8 +133,18 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::geometric::RRTstar>(si);
         else if (name == "lbtrrt")
             p = std::make_shared<ompl::geometric::LBTRRT>(si);
+        else if (name == "lazylbtrrt")
+            p = std::make_shared<ompl::geometric::LazyLBTRRT>(si);
         else if (name == "trrt")
             p = std::make_shared<ompl::geometric::TRRT>(si);
+        else if (name == "rrtxstatic")
+            p = std::make_shared<ompl::geometric::RRTXstatic>(si);
+        else if (name == "bitstar")
+            p = std::make_shared<ompl::geometric::BITstar>(si);
+        else if (name == "abitstar")
+            p = std::make_shared<ompl::geometric::ABITstar>(si);
+        else if (name == "aitstar")
+            p = std::make_shared<ompl::geometric::AITstar>(si);
         else if (name == "est")
             p = std::make_shared<ompl::geometric::EST>(si);
         else if (name == "biest")
@@ -161,15 +171,17 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::geometric::SPARS>(si);
         else if (name == "spars2")
             p = std::make_shared<ompl::geometric::SPARStwo>(si);
+        else if (name == "sst")
+            p = std::make_shared<ompl::geometric::SST>(si);
         else if (name == "stride")
             p = std::make_shared<ompl::geometric::STRIDE>(si);
         else if (name == "pdst")
             p = std::make_shared<ompl::geometric::PDST>(si);
         else if (name == "fmt")
             p = std::make_shared<ompl::geometric::FMT>(si);
-		else if (name == "bfmt")
+        else if (name == "bfmt")
             p = std::make_shared<ompl::geometric::BFMT>(si);
-        else if (name == "aps")
+        else if (name == "anytimepathshortening")
             p = std::make_shared<ompl::geometric::AnytimePathShortening>(si);
         else if (name == "cforest")
             p = std::make_shared<ompl::geometric::CForest>(si);
@@ -206,6 +218,8 @@ ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl
         vss = std::make_shared<ompl::base::ObstacleBasedValidStateSampler>(si);
     else if (type == "max_clearance")
         vss = std::make_shared<ompl::base::MaximizeClearanceValidStateSampler>(si);
+    else if (type == "bridge_test")
+        vss = std::make_shared<ompl::base::BridgeTestValidStateSampler>(si);
     else
         std::cerr << "Unknown sampler type: " << type << std::endl;
     if (vss)
@@ -234,9 +248,9 @@ ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(cons
         std::string threshold = bo_.declared_options_["problem.objective.threshold"];
         try
         {
-            opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+            opt->setCostThreshold(ompl::base::Cost(std::stod(threshold)));
         }
-        catch(boost::bad_lexical_cast &)
+        catch(std::invalid_argument &)
         {
             OMPL_WARN("Unable to parse optimization threshold: %s", threshold.c_str());
         }
@@ -301,9 +315,9 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
         std::string threshold = activeParams_["objective.threshold"];
         try
         {
-            opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+            opt->setCostThreshold(ompl::base::Cost(std::stod(threshold)));
         }
-        catch(boost::bad_lexical_cast &)
+        catch(std::invalid_argument &)
         {
             OMPL_WARN("Unable to parse optimization threshold: %s", threshold.c_str());
         }
@@ -320,19 +334,19 @@ void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::too
     {
         const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
         std::string fname = benchmark_->getExperimentName() + std::string("_")
-            + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
+            + status.activePlanner + std::string("_") + std::to_string(status.activeRun)
             + std::string(".path");
         std::ofstream pathfile(fname.c_str());
         ompl::base::PathPtr path = pdef->getSolutionPath();
-        ompl::geometric::PathGeometric* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(path.get());
-        if (geoPath)
+        auto* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(path.get());
+        if (geoPath != nullptr)
         {
             geoPath->interpolate();
             geoPath->printAsMatrix(pathfile);
         }
         else {
-            ompl::control::PathControl* controlPath = dynamic_cast<ompl::control::PathControl*>(path.get());
-            if (controlPath)
+            auto* controlPath = dynamic_cast<ompl::control::PathControl*>(path.get());
+            if (controlPath != nullptr)
             {
                 controlPath->interpolate();
                 controlPath->printAsMatrix(pathfile);
@@ -360,19 +374,19 @@ void CFGBenchmark::saveBestPath(const ompl::base::PlannerPtr &planner, ompl::too
     if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && bestPath_)
     {
         std::string fname = benchmark_->getExperimentName() + std::string("_")
-                          + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(bestPathIndex_)
+                          + status.activePlanner + std::string("_") + std::to_string(bestPathIndex_)
                           + std::string(".path");
         std::ofstream pathfile(fname.c_str());
 
-        ompl::geometric::PathGeometric* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(bestPath_.get());
-        if (geoPath)
+        auto* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(bestPath_.get());
+        if (geoPath != nullptr)
         {
             geoPath->interpolate();
             geoPath->printAsMatrix(pathfile);
         }
         else {
-            ompl::control::PathControl* controlPath = dynamic_cast<ompl::control::PathControl*>(bestPath_.get());
-            if (controlPath)
+            auto* controlPath = dynamic_cast<ompl::control::PathControl*>(bestPath_.get());
+            if (controlPath != nullptr)
             {
                 controlPath->interpolate();
                 controlPath->printAsMatrix(pathfile);
@@ -401,11 +415,11 @@ void CFGBenchmark::runBenchmark()
 
     try
     {
-        tl = boost::lexical_cast<double>(bo_.declared_options_["benchmark.time_limit"]);
-        ml = boost::lexical_cast<double>(bo_.declared_options_["benchmark.mem_limit"]);
-        rc = boost::lexical_cast<unsigned int>(bo_.declared_options_["benchmark.run_count"]);
+        tl = std::stod(bo_.declared_options_["benchmark.time_limit"]);
+        ml = std::stod(bo_.declared_options_["benchmark.mem_limit"]);
+        rc = std::stoul(bo_.declared_options_["benchmark.run_count"]);
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
         std::cerr << "Unable to parse benchmark parameters" << std::endl;
         return;
@@ -418,10 +432,18 @@ void CFGBenchmark::runBenchmark()
     req.timeBetweenUpdates = .5;
     req.displayProgress = true;
     req.saveConsoleOutput = false;
-    req.useThreads = true;
+    if (!bo_.declared_options_["benchmark.simplify"].empty())
+        try
+        {
+            req.simplify = boost::lexical_cast<bool>(bo_.declared_options_["benchmark.simplify"]);
+        }
+        catch (boost::bad_lexical_cast const &e)
+        {
+            OMPL_ERROR("Illegal value for benchmark.simplify parameter");
+        }
     benchmark_->benchmark(req);
     if (!bo_.declared_options_["benchmark.output"].empty())
         benchmark_->saveResultsToFile(((bo_.path_ / bo_.declared_options_["benchmark.output"]) / bo_.outfile_).string().c_str());
     else
-            benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
+        benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
 }

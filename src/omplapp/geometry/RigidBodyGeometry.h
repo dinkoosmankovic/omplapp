@@ -18,13 +18,9 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/RealVectorBounds.h>
 #include <memory>
-#if OMPL_HAS_ASSIMP3
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
-#else
-#include <assimp/aiScene.h>
-#include <assimp/assimp.hpp>
-#endif
+#include <boost/filesystem.hpp>
 #include <string>
 #include <vector>
 
@@ -109,7 +105,7 @@ namespace ompl
             /** \brief Change the type of collision checking for the rigid body */
             virtual void setStateValidityCheckerType (CollisionChecker ctype);
 
-            /** \brief Allocate default state validity checker using PQP. */
+            /** \brief Allocate default state validity checker using FCL. */
             const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
 
             const GeometrySpecification& getGeometrySpecification() const;
@@ -150,7 +146,18 @@ namespace ompl
                 3D. */
             base::RealVectorBounds inferEnvironmentBounds() const;
 
+            /** \brief set path to search for mesh files */
+            void setMeshPath(const std::vector<boost::filesystem::path>& path)
+            {
+                for (const auto &p : path)
+                    if (!boost::filesystem::is_directory(p))
+                        OMPL_WARN("Mesh path '%s' is not an existing directory", p.c_str());
+                meshPath_ = path;
+            }
+
         protected:
+            /** \brief return absolute path to mesh file if it exists and an empty path otherwise */
+            boost::filesystem::path findMeshFile(const std::string& fname);
 
             void computeGeometrySpecification();
 
@@ -176,6 +183,10 @@ namespace ompl
 
             /** \brief Value containing the type of collision checking to use */
             CollisionChecker              ctype_;
+
+            /** \brief Paths to search for mesh files if mesh file names do not correspond to
+             * absolute paths */
+            std::vector<boost::filesystem::path> meshPath_{OMPLAPP_RESOURCE_DIR};
 
         };
 

@@ -34,19 +34,21 @@
 
 /* Author: Ioan Sucan, Mark Moll */
 
-#include <ompl/control/planners/syclop/GridDecomposition.h>
 #include "BenchmarkTypes.h"
 
+#include <ompl/base/spaces/DubinsStateSpace.h>
+#include <ompl/base/spaces/ReedsSheppStateSpace.h>
+#include <ompl/control/planners/syclop/GridDecomposition.h>
 
 bool SE2BaseBenchmark::getStartState(ompl::base::ScopedState<ompl::base::SE2StateSpace>& start)
 {
     try
     {
-        start->setX(boost::lexical_cast<double>(bo_.declared_options_["problem.start.x"]));
-        start->setY(boost::lexical_cast<double>(bo_.declared_options_["problem.start.y"]));
-        start->setYaw(boost::lexical_cast<double>(bo_.declared_options_["problem.start.theta"]));
+        start->setX(std::stod(bo_.declared_options_["problem.start.x"]));
+        start->setY(std::stod(bo_.declared_options_["problem.start.y"]));
+        start->setYaw(std::stod(bo_.declared_options_["problem.start.theta"]));
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
         std::cerr << "Unable to read start state" << std::endl;
         return false;
@@ -58,11 +60,11 @@ bool SE2BaseBenchmark::getGoalState(ompl::base::ScopedState<ompl::base::SE2State
 {
     try
     {
-        goal->setX(boost::lexical_cast<double>(bo_.declared_options_["problem.goal.x"]));
-        goal->setY(boost::lexical_cast<double>(bo_.declared_options_["problem.goal.y"]));
-        goal->setYaw(boost::lexical_cast<double>(bo_.declared_options_["problem.goal.theta"]));
+        goal->setX(std::stod(bo_.declared_options_["problem.goal.x"]));
+        goal->setY(std::stod(bo_.declared_options_["problem.goal.y"]));
+        goal->setYaw(std::stod(bo_.declared_options_["problem.goal.theta"]));
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
         std::cerr << "Unable to read goal state" << std::endl;
         return false;
@@ -78,14 +80,14 @@ void SE2BaseBenchmark::setBounds(const ompl::base::StateSpacePtr& space)
             bo_.declared_options_.find("problem.volume.max.x") != bo_.declared_options_.end() && bo_.declared_options_.find("problem.volume.max.y") != bo_.declared_options_.end())
         {
             ompl::base::RealVectorBounds bounds(2);
-            bounds.setLow(0, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.min.x"]));
-            bounds.setLow(1, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.min.y"]));
-            bounds.setHigh(0, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.max.x"]));
-            bounds.setHigh(1, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.max.y"]));
+            bounds.setLow(0, std::stod(bo_.declared_options_["problem.volume.min.x"]));
+            bounds.setLow(1, std::stod(bo_.declared_options_["problem.volume.min.y"]));
+            bounds.setHigh(0, std::stod(bo_.declared_options_["problem.volume.max.x"]));
+            bounds.setHigh(1, std::stod(bo_.declared_options_["problem.volume.max.y"]));
             space->as<ompl::base::SE2StateSpace>()->setBounds(bounds);
         }
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
     }
 }
@@ -95,15 +97,15 @@ bool SE3BaseBenchmark::getStartState(ompl::base::ScopedState<ompl::base::SE3Stat
 {
     try
     {
-        start->setXYZ(boost::lexical_cast<double>(bo_.declared_options_["problem.start.x"]),
-                      boost::lexical_cast<double>(bo_.declared_options_["problem.start.y"]),
-                      boost::lexical_cast<double>(bo_.declared_options_["problem.start.z"]));
-        start->rotation().setAxisAngle(boost::lexical_cast<double>(bo_.declared_options_["problem.start.axis.x"]),
-                                       boost::lexical_cast<double>(bo_.declared_options_["problem.start.axis.y"]),
-                                       boost::lexical_cast<double>(bo_.declared_options_["problem.start.axis.z"]),
-                                       boost::lexical_cast<double>(bo_.declared_options_["problem.start.theta"]));
+        start->setXYZ(std::stod(bo_.declared_options_["problem.start.x"]),
+                      std::stod(bo_.declared_options_["problem.start.y"]),
+                      std::stod(bo_.declared_options_["problem.start.z"]));
+        start->rotation().setAxisAngle(std::stod(bo_.declared_options_["problem.start.axis.x"]),
+                                       std::stod(bo_.declared_options_["problem.start.axis.y"]),
+                                       std::stod(bo_.declared_options_["problem.start.axis.z"]),
+                                       std::stod(bo_.declared_options_["problem.start.theta"]));
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
         std::cerr << "Unable to read start state" << std::endl;
         return false;
@@ -115,15 +117,15 @@ bool SE3BaseBenchmark::getGoalState(ompl::base::ScopedState<ompl::base::SE3State
 {
     try
     {
-        goal->setXYZ(boost::lexical_cast<double>(bo_.declared_options_["problem.goal.x"]),
-                     boost::lexical_cast<double>(bo_.declared_options_["problem.goal.y"]),
-                     boost::lexical_cast<double>(bo_.declared_options_["problem.goal.z"]));
-        goal->rotation().setAxisAngle(boost::lexical_cast<double>(bo_.declared_options_["problem.goal.axis.x"]),
-                                      boost::lexical_cast<double>(bo_.declared_options_["problem.goal.axis.y"]),
-                                      boost::lexical_cast<double>(bo_.declared_options_["problem.goal.axis.z"]),
-                                      boost::lexical_cast<double>(bo_.declared_options_["problem.goal.theta"]));
+        goal->setXYZ(std::stod(bo_.declared_options_["problem.goal.x"]),
+                     std::stod(bo_.declared_options_["problem.goal.y"]),
+                     std::stod(bo_.declared_options_["problem.goal.z"]));
+        goal->rotation().setAxisAngle(std::stod(bo_.declared_options_["problem.goal.axis.x"]),
+                                      std::stod(bo_.declared_options_["problem.goal.axis.y"]),
+                                      std::stod(bo_.declared_options_["problem.goal.axis.z"]),
+                                      std::stod(bo_.declared_options_["problem.goal.theta"]));
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
         std::cerr << "Unable to read goal state" << std::endl;
         return false;
@@ -141,16 +143,16 @@ void SE3BaseBenchmark::setBounds(const ompl::base::StateSpacePtr& space)
             bo_.declared_options_.find("problem.volume.max.y") != bo_.declared_options_.end())
             {
             ompl::base::RealVectorBounds bounds(3);
-            bounds.setLow(0, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.min.x"]));
-            bounds.setLow(1, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.min.y"]));
-            bounds.setLow(2, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.min.z"]));
-            bounds.setHigh(0, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.max.x"]));
-            bounds.setHigh(1, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.max.y"]));
-            bounds.setHigh(2, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.max.z"]));
+            bounds.setLow(0, std::stod(bo_.declared_options_["problem.volume.min.x"]));
+            bounds.setLow(1, std::stod(bo_.declared_options_["problem.volume.min.y"]));
+            bounds.setLow(2, std::stod(bo_.declared_options_["problem.volume.min.z"]));
+            bounds.setHigh(0, std::stod(bo_.declared_options_["problem.volume.max.x"]));
+            bounds.setHigh(1, std::stod(bo_.declared_options_["problem.volume.max.y"]));
+            bounds.setHigh(2, std::stod(bo_.declared_options_["problem.volume.max.z"]));
             space->as<ompl::base::SE3StateSpace>()->setBounds(bounds);
         }
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
     }
 }
@@ -158,9 +160,26 @@ void SE3BaseBenchmark::setBounds(const ompl::base::StateSpacePtr& space)
 
 void SE2Benchmark::configure()
 {
-    setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>();
-    setup_se2_->setRobotMesh(getRobotMesh());
-    setup_se2_->setEnvironmentMesh(getEnvironmentMesh());
+    double turning_radius = 1.;
+    std::string statespace;
+    if (bo_.declared_options_.find("problem.turningradius") != bo_.declared_options_.end())
+        turning_radius = std::stod(bo_.declared_options_["problem.turningradius"]);
+    if (bo_.declared_options_.find("problem.statespace") != bo_.declared_options_.end())
+        statespace = bo_.declared_options_["problem.statespace"];
+    if (statespace == "dubins")
+    {
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
+            std::make_shared<ompl::base::DubinsStateSpace>(turning_radius));
+    }
+    else if (statespace == "dubinssymmetric")
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
+            std::make_shared<ompl::base::DubinsStateSpace>(turning_radius, true));
+    else if (statespace == "reedsshepp")
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
+            std::make_shared<ompl::base::ReedsSheppStateSpace>(turning_radius));
+    else
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>();
+    setMeshes(*setup_se2_);
 
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_se2_->getStateSpace());
     ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_se2_->getStateSpace());
@@ -169,7 +188,7 @@ void SE2Benchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = std::stod(bo_.declared_options_["problem.threshold"]);
     setup_se2_->setStartAndGoalStates(start, goal, t);
     setBounds(setup_se2_->getStateSpace());
     setup_se2_->setOptimizationObjective(getOptimizationObjective(setup_se2_->getSpaceInformation()));
@@ -181,8 +200,7 @@ void SE2Benchmark::configure()
 void SE3Benchmark::configure()
 {
     setup_se3_ = std::make_shared<ompl::app::SE3RigidBodyPlanning>();
-    setup_se3_->setRobotMesh(getRobotMesh());
-    setup_se3_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_se3_);
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_se3_->getStateSpace());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_se3_->getStateSpace());
     if (!getStartState(start))
@@ -190,7 +208,7 @@ void SE3Benchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = std::stod(bo_.declared_options_["problem.threshold"]);
     setup_se3_->setStartAndGoalStates(start, goal, t);
     setBounds(setup_se3_->getStateSpace());
     setup_se3_->setOptimizationObjective(getOptimizationObjective(setup_se3_->getSpaceInformation()));
@@ -202,8 +220,7 @@ void SE3Benchmark::configure()
 void KinematicCarBenchmark::configure()
 {
     setup_kinematicCar_ = std::make_shared<ompl::app::KinematicCarPlanning>();
-    setup_kinematicCar_->setRobotMesh(getRobotMesh());
-    setup_kinematicCar_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_kinematicCar_);
 
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_kinematicCar_->getStateSpace());
     ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_kinematicCar_->getStateSpace());
@@ -212,7 +229,7 @@ void KinematicCarBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = std::stod(bo_.declared_options_["problem.threshold"]);
     setup_kinematicCar_->setStartAndGoalStates(start, goal, t);
     setBounds(setup_kinematicCar_->getStateSpace());
     setup_kinematicCar_->setOptimizationObjective(getOptimizationObjective(setup_kinematicCar_->getSpaceInformation()));
@@ -224,8 +241,7 @@ void KinematicCarBenchmark::configure()
 void DynamicCarBenchmark::configure()
 {
     setup_dynamicCar_ = std::make_shared<ompl::app::DynamicCarPlanning>();
-    setup_dynamicCar_->setRobotMesh(getRobotMesh());
-    setup_dynamicCar_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_dynamicCar_);
 
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_dynamicCar_->getGeometricComponentStateSpace());
     ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_dynamicCar_->getGeometricComponentStateSpace());
@@ -234,7 +250,7 @@ void DynamicCarBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = std::stod(bo_.declared_options_["problem.threshold"]);
     setup_dynamicCar_->setStartAndGoalStates(
         setup_dynamicCar_->getFullStateFromGeometricComponent(start),
         setup_dynamicCar_->getFullStateFromGeometricComponent(goal), t);
@@ -248,8 +264,7 @@ void DynamicCarBenchmark::configure()
 void BlimpBenchmark::configure()
 {
     setup_blimp_ = std::make_shared<ompl::app::BlimpPlanning>();
-    setup_blimp_->setRobotMesh(getRobotMesh());
-    setup_blimp_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_blimp_);
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_blimp_->getGeometricComponentStateSpace());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_blimp_->getGeometricComponentStateSpace());
     if (!getStartState(start))
@@ -257,7 +272,7 @@ void BlimpBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = std::stod(bo_.declared_options_["problem.threshold"]);
     setup_blimp_->setStartAndGoalStates(
         setup_blimp_->getFullStateFromGeometricComponent(start),
         setup_blimp_->getFullStateFromGeometricComponent(goal), t);
@@ -270,8 +285,7 @@ void BlimpBenchmark::configure()
 void QuadrotorBenchmark::configure()
 {
     setup_quadrotor_ = std::make_shared<ompl::app::QuadrotorPlanning>();
-    setup_quadrotor_->setRobotMesh(getRobotMesh());
-    setup_quadrotor_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_quadrotor_);
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_quadrotor_->getGeometricComponentStateSpace());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_quadrotor_->getGeometricComponentStateSpace());
     if (!getStartState(start))
@@ -279,7 +293,7 @@ void QuadrotorBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = std::stod(bo_.declared_options_["problem.threshold"]);
     setup_quadrotor_->setStartAndGoalStates(
         setup_quadrotor_->getFullStateFromGeometricComponent(start),
         setup_quadrotor_->getFullStateFromGeometricComponent(goal), t);

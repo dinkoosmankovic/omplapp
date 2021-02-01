@@ -16,27 +16,24 @@ import sys
 from os.path import abspath, dirname, join
 
 ompl_app_root = dirname(dirname(dirname(abspath(__file__))))
-ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 
 try:
     from ompl import base as ob
     from ompl import geometric as og
-    from ompl import control as oc
     from ompl import app as oa
-except:
-    sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings' ) )
+except ImportError:
+    sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
     from ompl import base as ob
     from ompl import geometric as og
-    from ompl import control as oc
     from ompl import app as oa
 
 # plan in SE(3) for two robots
 setup = oa.SE3MultiRigidBodyPlanning(2)
 
 # load the robots and the environment
-setup.setRobotMesh(join(ompl_resources_dir, 'cubicles_robot.dae'))
-setup.addRobotMesh(join(ompl_resources_dir, 'cubicles_robot.dae'))
-setup.setEnvironmentMesh(join(ompl_resources_dir, 'cubicles_env.dae'))
+setup.setRobotMesh('3D/cubicles_robot.dae')
+setup.addRobotMesh('3D/cubicles_robot.dae')
+setup.setEnvironmentMesh('3D/cubicles_env.dae')
 
 # define start state
 start = ob.State(setup.getSpaceInformation())
@@ -69,7 +66,7 @@ goal2.setZ(70.57)
 goal2.rotation().setIdentity()
 
 # set the start & goal states
-setup.setStartAndGoalStates(start, goal);
+setup.setStartAndGoalStates(start, goal)
 
 # setting collision checking resolution to 1% of the space extent
 setup.getSpaceInformation().setStateValidityCheckingResolution(0.01)

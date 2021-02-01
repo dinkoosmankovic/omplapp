@@ -1,12 +1,12 @@
-# License
+# License {#license}
 
 The Open Motion Planning Library (OMPL) is released as Open Source under the terms of a [3-clause BSD license](#bsdlicense). OMPL.app, the front-end to OMPL, is distributed under the [Rice University software license](#ricelicense). Third-party dependencies are subject to their own respective licenses.
 
 ---
 
-# BSD License {#bsdlicense}
+## BSD License {#bsdlicense}
 
-##### Copyright &copy; 2010–2014, Rice University. All rights reserved.
+**Copyright &copy; 2010–2019, Rice University. All rights reserved.**
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -18,11 +18,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 
 ---
 
-# Rice University Software Distribution License {#ricelicense}
+## Rice University Software Distribution License {#ricelicense}
 
-##### Copyright &copy; 2010–2014, Rice University. All rights reserved.
+**Copyright &copy; 2010–2019, Rice University. All rights reserved.**
 
-##### Created by Ioan Șucan, Mark Moll, and Lydia E. Kavraki (the “Developers”)
+**Created by Ioan Șucan, Mark Moll, and Lydia E. Kavraki (the “Developers”)**
 
 The Software is available for download and use subject to the terms and conditions of this License. Access or use of the Software constitutes acceptance and agreement to the terms and conditions of this License.
 
@@ -35,7 +35,7 @@ This Software is distributed to individuals for personal non-commercial use and 
 3. You provide the Developers with feedback on the use of the Software in your research, and that the Developers and Rice University are permitted to use any information You provide in making changes to the Software. All bug reports and technical questions shall be sent to the email address provided for the specific Software: ompl-devel@lists.sourceforge.net.
 4. You acknowledge that the Developers, Rice and its licensees may develop modifications to Software that may be substantially similar to your modifications of Software, and that the Developers, Rice and its licensees shall not be constrained in any way by You in Rice’s or its licensees’ use or management of such modifications. You acknowledge the right of the Developers and Rice to prepare and publish modifications to Software that may be substantially similar or functionally equivalent to your modifications and improvements, and if You obtain patent protection for any modification or improvement to Software, You agree not to allege or enjoin infringement of your patent by the Developers and Rice or by any of Rice’s licensees obtaining modifications or improvements to Software from Rice University or the Developers.
 5. You and the Developers will acknowledge in our publications contributions we make to each other’s research involving or based on the Software. All work that uses the Software should reference:
-   http://ompl.kavrakilab.org
+   https://ompl.kavrakilab.org
 6. No support will be provided by the Developers or by Rice University.
 7. Redistribution is not permitted. Rice will maintain a copy of the Software as a directly downloadable file, available under the terms of license specified in this agreement.
 8. Neither the name of the University nor the names of its faculty, staff, or students may be used to endorse or promote products derived from this software without specific prior written permission.
